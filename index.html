@@ -10,7 +10,7 @@
 <script>
 // REPLACE WITH YOUR FIREBASE CONFIG
 const firebaseConfig = {
-  apiKey: "",
+  apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT.firebaseapp.com",
   projectId: "YOUR_PROJECT_ID",
   storageBucket: "YOUR_PROJECT.appspot.com",
@@ -1007,7 +1007,6 @@ function HistoryScreen({onAI}){
 
 
 // ─── PERSONAL AI ──────────────────────────────────────────────────────────────
-const ANTHROPIC_KEY = 'YOUR_API_KEY'; // Replace with your key
 
 function PersonalAIScreen({profile}){
   const [messages,setMessages]=useState([
@@ -1030,13 +1029,10 @@ function PersonalAIScreen({profile}){
     setMessages(newMessages);
     setLoading(true);
     try{
-      const res=await fetch('https://api.anthropic.com/v1/messages',{
+      const res=await fetch('https://jolly-boat-c87e.brurovall.workers.dev',{
         method:'POST',
         headers:{
           'Content-Type':'application/json',
-          'x-api-key':ANTHROPIC_KEY,
-          'anthropic-version':'2023-06-01',
-          'anthropic-dangerous-allow-browser':'true',
         },
         body:JSON.stringify({
           model:'claude-sonnet-4-20250514',
