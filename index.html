@@ -4,12 +4,30 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>NEURAL HUB</title>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+<script>
+// REPLACE WITH YOUR FIREBASE CONFIG
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+</script>
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
-:root{--bg:#0b0b10;--surface:#111118;--surface2:#16161f;--surface3:#1d1d2a;--border:rgba(167,139,250,0.12);--accent:#a78bfa;--accent2:#7c3aed;--accent-glow:rgba(167,139,250,0.25);--muted:#6b6880;--stone:#2a2838;--sidebar:236px;}
+:root{--bg:#0b0b10;--surface:#111118;--surface2:#16161f;--surface3:#1d1d2a;--border:rgba(167,139,250,0.12);--accent:#a78bfa;--accent2:#7c3aed;--accent-glow:rgba(167,139,250,0.25);--muted:#6b6880;--stone:#2a2838;--sidebar:340px;}
 *{margin:0;padding:0;box-sizing:border-box;}
 body{background:var(--bg);color:#fff;font-family:'Space Grotesk',sans-serif;height:100vh;overflow:hidden;}
 #root{position:relative;z-index:1;height:100vh;display:flex;}
@@ -122,6 +140,53 @@ const CATEGORIES = [
     {id:'khanmigo',name:'Khanmigo',domain:'khanacademy.org',url:'https://www.khanacademy.org/khan-labs',desc:'AI tutor by Khan Academy',tier:'Paid',pricing:'$4/mo students',type:'AI Tutor',company:'Khan Academy',founded:'2023',bestFor:'Students K-12+',access:'Web',isNew:false,trending:false,features:['Socratic method','Math tutoring','Writing coach','SAT prep','Teacher tools'],ytSearch:'Khanmigo AI tutor Khan Academy 2024',similar:['perplexity','notebook','consensus']},
     {id:'photomath',name:'Photomath',domain:'photomath.com',url:'https://photomath.com',desc:'Scan & solve math problems',tier:'Freemium',pricing:'Free + $10/mo',type:'Math AI',company:'Google',founded:'2014',bestFor:'Students, Parents',access:'iOS / Android',isNew:false,trending:true,features:['Camera scan math','Step-by-step','Graphing calculator','Word problems','Multiple methods'],ytSearch:'Photomath app tutorial how to use 2024',similar:['khanmigo','notebook','elicit']},
   ]},
+  {id:"cybersecurity",label:"Cybersecurity",icon:"◈",color:"#f87171",ais:[
+    {id:"virustotal",name:"VirusTotal",domain:"virustotal.com",url:"https://virustotal.com",desc:"Scan files & URLs for malware",tier:"Free",pricing:"Free / API",type:"Security Scanner",company:"Google",founded:"2004",bestFor:"Security researchers, IT teams",access:"Web / API",isNew:false,trending:true,features:["File scanning","URL analysis","API access","Community scores","Threat intelligence"],ytSearch:"VirusTotal tutorial how to use 2024",similar:["darktrace","haveibeenpwned","malwarebytes"]},
+    {id:"haveibeenpwned",name:"Have I Been Pwned",domain:"haveibeenpwned.com",url:"https://haveibeenpwned.com",desc:"Check if your data was breached",tier:"Free",pricing:"Free",type:"Breach Checker",company:"Troy Hunt",founded:"2013",bestFor:"Everyone",access:"Web / API",isNew:false,trending:false,features:["Email breach check","Password checker","Domain search","API access","Breach alerts"],ytSearch:"Have I Been Pwned how to use 2024",similar:["virustotal","darktrace","malwarebytes"]},
+    {id:"darktrace",name:"Darktrace",domain:"darktrace.com",url:"https://darktrace.com",desc:"AI-powered cyber defense",tier:"Paid",pricing:"Enterprise",type:"Cybersecurity AI",company:"Darktrace",founded:"2013",bestFor:"Enterprise security teams",access:"Enterprise",isNew:false,trending:true,features:["Autonomous response","Threat detection","Email security","OT/IoT security","Self-learning AI"],ytSearch:"Darktrace AI cybersecurity 2024",similar:["virustotal","haveibeenpwned","malwarebytes"]},
+    {id:"malwarebytes",name:"Malwarebytes",domain:"malwarebytes.com",url:"https://malwarebytes.com",desc:"AI-powered malware protection",tier:"Freemium",pricing:"Free + $3.75/mo",type:"Antivirus AI",company:"Malwarebytes",founded:"2008",bestFor:"Individuals, SMBs",access:"Desktop / Web",isNew:false,trending:false,features:["Real-time protection","AI threat detection","VPN included","Browser guard","Ransomware protection"],ytSearch:"Malwarebytes review tutorial 2024",similar:["virustotal","darktrace","haveibeenpwned"]},
+  ]},
+  {id:"data",label:"Data & Analytics",icon:"◫",color:"#22d3ee",ais:[
+    {id:"julius",name:"Julius AI",domain:"julius.ai",url:"https://julius.ai",desc:"Chat with your data",tier:"Freemium",pricing:"Free + $20/mo",type:"Data Analysis AI",company:"Julius AI",founded:"2023",bestFor:"Analysts, Researchers",access:"Web",isNew:true,trending:true,features:["CSV & Excel analysis","Python charts","SQL queries","Data visualization","AI explanations"],ytSearch:"Julius AI data analysis tutorial 2024",similar:["chatcsv","obviously","akkio"]},
+    {id:"chatcsv",name:"ChatCSV",domain:"chatcsv.co",url:"https://chatcsv.co",desc:"Ask questions about your CSV",tier:"Freemium",pricing:"Free + $9/mo",type:"Data Chat AI",company:"ChatCSV",founded:"2023",bestFor:"Non-technical analysts",access:"Web",isNew:false,trending:false,features:["CSV upload","Natural language queries","Charts","Export results","Multiple files"],ytSearch:"ChatCSV tutorial AI data analysis 2024",similar:["julius","obviously","akkio"]},
+    {id:"obviously",name:"Obviously AI",domain:"obviously.ai",url:"https://obviously.ai",desc:"No-code predictive AI",tier:"Paid",pricing:"From $75/mo",type:"Predictive Analytics",company:"Obviously AI",founded:"2019",bestFor:"Business analysts",access:"Web",isNew:false,trending:false,features:["Drag & drop ML","Predictions","Churn analysis","Revenue forecasting","API deploy"],ytSearch:"Obviously AI no-code machine learning 2024",similar:["julius","chatcsv","akkio"]},
+    {id:"akkio",name:"Akkio",domain:"akkio.com",url:"https://akkio.com",desc:"AI analytics for agencies",tier:"Paid",pricing:"From $49/mo",type:"Business Intelligence AI",company:"Akkio",founded:"2019",bestFor:"Agencies, Marketers",access:"Web",isNew:false,trending:false,features:["Automated ML","Chat data explore","Forecasting","Lead scoring","Client reports"],ytSearch:"Akkio AI analytics tutorial 2024",similar:["julius","chatcsv","obviously"]},
+  ]},
+  {id:"translation",label:"Translation",icon:"◎",color:"#34d399",ais:[
+    {id:"deepl",name:"DeepL",domain:"deepl.com",url:"https://deepl.com",desc:"AI-powered translation",tier:"Freemium",pricing:"Free + $8.74/mo",type:"Translation AI",company:"DeepL SE",founded:"2017",bestFor:"Writers, Professionals",access:"Web / Desktop / API",isNew:false,trending:true,features:["31 languages","Document translation","Glossary","Tone control","API access"],ytSearch:"DeepL translator review tutorial 2024",similar:["googletranslate","wordly","papago"]},
+    {id:"googletranslate",name:"Google Translate",domain:"translate.google.com",url:"https://translate.google.com",desc:"Translate text, voice & images",tier:"Free",pricing:"Free",type:"Translation AI",company:"Google",founded:"2006",bestFor:"Everyone",access:"Web / App",isNew:false,trending:false,features:["133 languages","Camera translation","Voice input","Offline mode","Conversation mode"],ytSearch:"Google Translate tips tricks 2024",similar:["deepl","wordly","papago"]},
+    {id:"wordly",name:"Wordly",domain:"wordly.ai",url:"https://wordly.ai",desc:"Real-time meeting translation",tier:"Paid",pricing:"From $49/event",type:"Live Translation AI",company:"Wordly",founded:"2018",bestFor:"Event organizers, Global teams",access:"Web",isNew:false,trending:false,features:["46 languages","Real-time captions","Zoom integration","No hardware needed","Transcript export"],ytSearch:"Wordly AI live translation 2024",similar:["deepl","googletranslate","papago"]},
+  ]},
+  {id:"business",label:"Business & Sales",icon:"▦",color:"#fb923c",ais:[
+    {id:"hubspotai",name:"HubSpot AI",domain:"hubspot.com",url:"https://hubspot.com",desc:"CRM with AI superpowers",tier:"Freemium",pricing:"Free + Paid plans",type:"CRM AI",company:"HubSpot",founded:"2006",bestFor:"Sales & marketing teams",access:"Web",isNew:false,trending:true,features:["AI email writer","ChatSpot","Predictive lead scoring","Content assistant","Deal insights"],ytSearch:"HubSpot AI features tutorial 2024",similar:["gong","salesforceai","clay"]},
+    {id:"gong",name:"Gong",domain:"gong.io",url:"https://gong.io",desc:"Revenue intelligence AI",tier:"Paid",pricing:"Enterprise",type:"Sales AI",company:"Gong",founded:"2015",bestFor:"Sales teams, Revenue leaders",access:"Web",isNew:false,trending:true,features:["Call recording","Deal insights","Coaching","Forecast accuracy","Competitor tracking"],ytSearch:"Gong.io sales AI tutorial review 2024",similar:["hubspotai","salesforceai","clay"]},
+    {id:"clay",name:"Clay",domain:"clay.com",url:"https://clay.com",desc:"AI-powered prospecting",tier:"Freemium",pricing:"Free + $149/mo",type:"Sales Prospecting AI",company:"Clay",founded:"2021",bestFor:"Sales, Growth hackers",access:"Web",isNew:true,trending:true,features:["Data enrichment","AI messaging","75+ integrations","Waterfall enrichment","CRM sync"],ytSearch:"Clay.com prospecting tutorial 2024",similar:["hubspotai","gong","salesforceai"]},
+  ]},
+  {id:"gaming",label:"Gaming",icon:"⬡",color:"#a78bfa",ais:[
+    {id:"inworld",name:"Inworld AI",domain:"inworld.ai",url:"https://inworld.ai",desc:"AI characters for games",tier:"Freemium",pricing:"Free + Paid",type:"Game AI",company:"Inworld AI",founded:"2021",bestFor:"Game developers",access:"SDK / Web",isNew:true,trending:true,features:["NPCs with memory","Dynamic dialogue","Emotion engine","Unreal & Unity SDK","Voice integration"],ytSearch:"Inworld AI game characters tutorial 2024",similar:["scenario","leonardoai","convai"]},
+    {id:"scenario",name:"Scenario",domain:"scenario.com",url:"https://scenario.com",desc:"AI art for game assets",tier:"Freemium",pricing:"Free + $24/mo",type:"Game Asset AI",company:"Scenario",founded:"2022",bestFor:"Game developers, Artists",access:"Web",isNew:false,trending:true,features:["Custom trained models","Consistent art style","API access","Unity plugin","Batch generation"],ytSearch:"Scenario AI game asset generator 2024",similar:["inworld","leonardoai","convai"]},
+    {id:"leonardoai",name:"Leonardo AI",domain:"leonardo.ai",url:"https://leonardo.ai",desc:"AI image generation for games",tier:"Freemium",pricing:"Free + $10/mo",type:"Image & Asset AI",company:"Leonardo AI",founded:"2022",bestFor:"Game devs, Concept artists",access:"Web",isNew:false,trending:true,features:["Game asset generation","Custom models","Real-time canvas","3D texture gen","API access"],ytSearch:"Leonardo AI tutorial review 2024",similar:["scenario","inworld","midjourney"]},
+  ]},
+  {id:"socialmedia",label:"Social Media",icon:"◉",color:"#f472b6",ais:[
+    {id:"predis",name:"Predis.ai",domain:"predis.ai",url:"https://predis.ai",desc:"AI social media content creator",tier:"Freemium",pricing:"Free + $29/mo",type:"Social Media AI",company:"Predis AI",founded:"2021",bestFor:"Marketers, Small businesses",access:"Web",isNew:false,trending:true,features:["Post generation","Video creation","Competitor analysis","Hashtag suggestions","Multi-platform"],ytSearch:"Predis AI social media tutorial 2024",similar:["ocoya","feedhive","buffer"]},
+    {id:"ocoya",name:"Ocoya",domain:"ocoya.com",url:"https://ocoya.com",desc:"AI content & scheduling",tier:"Freemium",pricing:"Free + $19/mo",type:"Social Media AI",company:"Ocoya",founded:"2021",bestFor:"Content creators, Agencies",access:"Web",isNew:false,trending:false,features:["AI captions","Image generation","Scheduling","Analytics","50+ integrations"],ytSearch:"Ocoya AI social media marketing 2024",similar:["predis","feedhive","buffer"]},
+    {id:"feedhive",name:"FeedHive",domain:"feedhive.com",url:"https://feedhive.com",desc:"AI-powered social scheduling",tier:"Freemium",pricing:"Free + $19/mo",type:"Social Scheduling AI",company:"FeedHive",founded:"2021",bestFor:"Content creators, Marketers",access:"Web",isNew:false,trending:false,features:["AI writing assistant","Recycling posts","Conditional posting","Analytics","Multi-platform"],ytSearch:"FeedHive AI social media tool 2024",similar:["predis","ocoya","buffer"]},
+  ]},
+  {id:"education",label:"Education",icon:"◐",color:"#60a5fa",ais:[
+    {id:"duolingo",name:"Duolingo",domain:"duolingo.com",url:"https://duolingo.com",desc:"AI language learning",tier:"Freemium",pricing:"Free + $6.99/mo",type:"Language Learning AI",company:"Duolingo",founded:"2011",bestFor:"Language learners",access:"Web / App",isNew:false,trending:true,features:["40+ languages","Adaptive lessons","AI conversations","Streak system","Duolingo Max"],ytSearch:"Duolingo tips tricks AI 2024",similar:["quizlet","khanmigo","socratic"]},
+    {id:"quizlet",name:"Quizlet AI",domain:"quizlet.com",url:"https://quizlet.com",desc:"AI flashcards & study tools",tier:"Freemium",pricing:"Free + $7.99/mo",type:"Study AI",company:"Quizlet",founded:"2005",bestFor:"Students",access:"Web / App",isNew:false,trending:false,features:["AI flashcards","Practice tests","Explanations","Study guides","500M+ sets"],ytSearch:"Quizlet AI study tool tutorial 2024",similar:["duolingo","khanmigo","socratic"]},
+    {id:"socratic",name:"Socratic",domain:"socratic.org",url:"https://socratic.org",desc:"Google AI homework helper",tier:"Free",pricing:"Free",type:"Homework AI",company:"Google",founded:"2013",bestFor:"Students K-12",access:"iOS / Android",isNew:false,trending:false,features:["Photo questions","Step-by-step","All subjects","Visual explanations","Free forever"],ytSearch:"Socratic AI homework helper 2024",similar:["duolingo","quizlet","khanmigo"]},
+  ]},
+  {id:"health",label:"Health & Wellness",icon:"◑",color:"#4ade80",ais:[
+    {id:"ada",name:"Ada Health",domain:"ada.com",url:"https://ada.com",desc:"AI symptom assessment",tier:"Free",pricing:"Free",type:"Health AI",company:"Ada Health",founded:"2011",bestFor:"Patients, Healthcare providers",access:"Web / App",isNew:false,trending:false,features:["Symptom checker","Medical knowledge","30+ languages","Doctor reports","Evidence-based"],ytSearch:"Ada Health AI symptom checker 2024",similar:["babylon","whoop","infermedica"]},
+    {id:"babylon",name:"Babylon Health",domain:"babylonhealth.com",url:"https://babylonhealth.com",desc:"AI-powered digital health",tier:"Freemium",pricing:"Free + Subscription",type:"Digital Health AI",company:"Babylon Health",founded:"2013",bestFor:"Patients, Insurers",access:"Web / App",isNew:false,trending:false,features:["AI doctor consultations","Health monitoring","Symptom checker","Chronic disease management","Mental health"],ytSearch:"Babylon Health AI review 2024",similar:["ada","whoop","infermedica"]},
+    {id:"whoop",name:"WHOOP AI",domain:"whoop.com",url:"https://whoop.com",desc:"AI fitness & recovery tracker",tier:"Paid",pricing:"$30/mo with device",type:"Fitness AI",company:"WHOOP",founded:"2012",bestFor:"Athletes, Fitness enthusiasts",access:"App + Wearable",isNew:false,trending:true,features:["Recovery score","Strain tracking","Sleep analysis","AI coaching","Health insights"],ytSearch:"WHOOP AI fitness tracker review 2024",similar:["ada","babylon","infermedica"]},
+  ]},
+  {id:"research",label:"Science & Research",icon:"⬢",color:"#e879f9",ais:[
+    {id:"scite",name:"Scite",domain:"scite.ai",url:"https://scite.ai",desc:"Smart citations for research",tier:"Freemium",pricing:"Free + $20/mo",type:"Research AI",company:"Scite",founded:"2018",bestFor:"Researchers, Academics",access:"Web",isNew:false,trending:false,features:["Citation context","Supporting/contradicting","Literature review","Reference check","Assistant AI"],ytSearch:"Scite AI research tool tutorial 2024",similar:["researchrabbit","semantic","elicit"]},
+    {id:"researchrabbit",name:"ResearchRabbit",domain:"researchrabbit.ai",url:"https://researchrabbit.ai",desc:"AI paper discovery",tier:"Free",pricing:"Free forever",type:"Research Discovery AI",company:"ResearchRabbit",founded:"2020",bestFor:"Academics, PhD students",access:"Web",isNew:false,trending:true,features:["Paper recommendations","Citation networks","Zotero sync","Collections","Author discovery"],ytSearch:"ResearchRabbit AI paper discovery 2024",similar:["scite","semantic","elicit"]},
+    {id:"semantic",name:"Semantic Scholar",domain:"semanticscholar.org",url:"https://semanticscholar.org",desc:"AI-powered academic search",tier:"Free",pricing:"Free",type:"Academic Search AI",company:"Allen Institute for AI",founded:"2015",bestFor:"Researchers, Students",access:"Web / API",isNew:false,trending:false,features:["200M+ papers","AI summaries","Citation graphs","TLDR summaries","API access"],ytSearch:"Semantic Scholar AI research 2024",similar:["scite","researchrabbit","elicit"]},
+  ]},
   {id:'productivity',label:'Productivity',icon:'◐',color:'#4ade80',ais:[
     {id:'zapier',name:'Zapier AI',domain:'zapier.com',url:'https://zapier.com',desc:'Automate workflows with AI',tier:'Freemium',pricing:'Free + $19.99/mo',type:'Automation AI',company:'Zapier',founded:'2011',bestFor:'Non-technical, Teams',access:'Web',isNew:false,trending:false,features:['7000+ integrations','AI Zap builder','Chatbots','Tables & Interfaces','Multi-step automations'],ytSearch:'Zapier AI automation tutorial 2024',similar:['make','reclaim','otter']},
     {id:'make',name:'Make',domain:'make.com',url:'https://make.com',desc:'Visual no-code automation',tier:'Freemium',pricing:'Free + $9/mo',type:'Automation Platform',company:'Make',founded:'2012',bestFor:'Power users, Agencies',access:'Web',isNew:false,trending:false,features:['Visual flow builder','1500+ integrations','AI modules','Error handling','Real-time execution'],ytSearch:'Make.com automation tutorial 2024',similar:['zapier','reclaim','otter']},
@@ -133,6 +198,46 @@ const CATEGORIES = [
 const ALL_AIS = CATEGORIES.flatMap(c=>c.ais.map(a=>({...a,category:c.label,color:c.color,catId:c.id,catIcon:c.icon})));
 const TIER_COLORS={Free:'#34d399',Freemium:'#60a5fa',Paid:'#fb923c'};
 const ROLE_CATEGORIES={Designer:['design','presentations','video'],Developer:['coding','productivity','study'],Student:['study','writing','assistants'],Creator:['video','music','voice'],Marketer:['writing','presentations','productivity'],Everyone:null};
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+const USERS_KEY = 'nh_users';
+
+function getUsers(){ try{return JSON.parse(localStorage.getItem(USERS_KEY)||'[]');}catch{return[];} }
+function saveUsers(u){ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }
+
+function registerUser(name, email, password, role){
+  const users = getUsers();
+  if(users.find(u=>u.email===email)) return {error:'Email already registered.'};
+  const user = {id:Date.now().toString(), name:name||'Explorer', email, password:btoa(password), role, createdAt:new Date().toISOString()};
+  users.push(user);
+  saveUsers(users);
+  return {user};
+}
+
+function loginUser(email, password){
+  const users = getUsers();
+  const user = users.find(u=>u.email===email && u.password===btoa(password));
+  if(!user) return {error:'Invalid email or password.'};
+  return {user};
+}
+
+function signOut(){
+  S.set('nh_profile', null);
+  localStorage.removeItem('nh_profile');
+}
+
+async function requestNotifications(){
+  try{
+    const permission = await Notification.requestPermission();
+    return permission === 'granted';
+  }catch(e){return false;}
+}
+
+function sendNotification(title, body){
+  if(Notification.permission === 'granted'){
+    new Notification(title, {body, icon: '/favicon.ico'});
+  }
+}
 
 // ─── STORAGE ─────────────────────────────────────────────────────────────────
 const S={
@@ -154,6 +259,174 @@ function AILogo({domain,name,color,size=48}){
   const srcs=[`https://logo.clearbit.com/${domain}`,`https://www.google.com/s2/favicons?domain=${domain}&sz=256`];
   if(stage>=2)return <div style={{width:size,height:size,borderRadius:size*0.22,background:`${color}22`,border:`1px solid ${color}55`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:size*0.34,fontWeight:700,color,flexShrink:0}}>{name.slice(0,2).toUpperCase()}</div>;
   return <img src={srcs[stage]} onError={()=>setStage(s=>s+1)} style={{width:size,height:size,borderRadius:stage===1?size*0.18:size*0.22,objectFit:'contain',background:stage===1?'transparent':'#fff',padding:stage===1?0:size*0.1,flexShrink:0}} alt={name}/>;
+}
+
+// ─── AUTH UI ──────────────────────────────────────────────────────────────────
+function AuthScreen({onDone}){
+  const [mode,setMode]=useState('welcome');
+  const [name,setName]=useState('');
+  const [email,setEmail]=useState('');
+  const [password,setPassword]=useState('');
+  const [role,setRole]=useState('');
+  const [loading,setLoading]=useState(false);
+  const [error,setError]=useState('');
+  const [notifGranted,setNotifGranted]=useState(Notification.permission==='granted');
+  const roles=['Designer','Developer','Student','Creator','Marketer','Everyone'];
+
+  const inputStyle={width:'100%',background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:10,padding:'11px 14px',color:'#fff',fontSize:14,fontFamily:'Space Grotesk',outline:'none',marginBottom:10,boxSizing:'border-box'};
+  const btnPrimary={width:'100%',padding:'13px',borderRadius:11,border:'none',cursor:'pointer',background:'var(--accent2)',color:'#fff',fontSize:15,fontFamily:'Space Grotesk',fontWeight:600,marginBottom:8,transition:'all 0.2s'};
+
+  const handleRegister=()=>{
+    if(!email||!password||!role){setError('Please fill all fields.');return;}
+    if(password.length<6){setError('Password must be at least 6 characters.');return;}
+    setLoading(true);setError('');
+    const result=registerUser(name,email,password,role);
+    if(result.error){setError(result.error);setLoading(false);return;}
+    const profile={name:result.user.name,email:result.user.email,role:result.user.role,id:result.user.id};
+    setProfile(profile);
+    sendNotification('Welcome to Neural Hub!','Your account has been created successfully.');
+    onDone(profile);
+    setLoading(false);
+  };
+
+  const handleLogin=()=>{
+    if(!email||!password){setError('Please fill all fields.');return;}
+    setLoading(true);setError('');
+    const result=loginUser(email,password);
+    if(result.error){setError(result.error);setLoading(false);return;}
+    const profile={name:result.user.name,email:result.user.email,role:result.user.role,id:result.user.id};
+    setProfile(profile);
+    sendNotification('Welcome back!',`Good to see you again, ${result.user.name}.`);
+    onDone(profile);
+    setLoading(false);
+  };
+
+  const handleNotifications=async()=>{
+    const granted=await requestNotifications();
+    setNotifGranted(granted);
+    if(granted) setTimeout(()=>sendNotification('Neural Hub 🧠','Notifications enabled! You will get AI news alerts.'),500);
+  };
+
+  const continueAsGuest=()=>{
+    const profile={name:'Explorer',role:role||'Everyone'};
+    setProfile(profile);
+    onDone(profile);
+  };
+
+  return(
+    <div style={{position:'fixed',inset:0,background:'rgba(11,11,16,0.99)',zIndex:1000,display:'flex',alignItems:'center',justifyContent:'center',padding:24,overflowY:'auto'}}>
+      <div style={{maxWidth:420,width:'100%'}}>
+        {/* Header */}
+        <div style={{textAlign:'center',marginBottom:28}}>
+          <div style={{width:56,height:56,borderRadius:16,background:'var(--accent2)',display:'flex',alignItems:'center',justifyContent:'center',fontSize:28,margin:'0 auto 14px',boxShadow:'0 0 30px var(--accent-glow)'}}>⬡</div>
+          <div style={{fontSize:10,letterSpacing:4,color:'var(--accent)',marginBottom:6,fontFamily:'Space Mono'}}>WELCOME</div>
+          <h1 style={{fontSize:28,fontWeight:700,marginBottom:4,color:'#fff'}}>Neural Hub</h1>
+          <p style={{color:'var(--muted)',fontSize:13}}>Every AI tool in one place.</p>
+        </div>
+
+        {/* WELCOME MODE */}
+        {mode==='welcome'&&(
+          <div>
+            {/* Role */}
+            <div style={{marginBottom:16}}>
+              <div style={{fontSize:11,color:'var(--muted)',marginBottom:8,letterSpacing:1}}>I AM A...</div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:7}}>
+                {roles.map(r=>(
+                  <button key={r} onClick={()=>setRole(r)}
+                    style={{padding:'10px 6px',borderRadius:10,cursor:'pointer',fontFamily:'Space Grotesk',fontSize:12,fontWeight:500,transition:'all 0.15s',
+                      background:role===r?'rgba(167,139,250,0.2)':'var(--surface2)',
+                      border:`1px solid ${role===r?'var(--accent)':'var(--border)'}`,
+                      color:role===r?'var(--accent)':'var(--muted)'}}>
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Notifications */}
+            <div style={{marginBottom:16,padding:'12px 14px',background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:10,display:'flex',alignItems:'center',justifyContent:'space-between',gap:12}}>
+              <div>
+                <div style={{fontSize:13,fontWeight:600,color:'#fff',marginBottom:2}}>🔔 AI News Notifications</div>
+                <div style={{fontSize:11,color:'var(--muted)'}}>Get alerts when big AI news drops</div>
+              </div>
+              <button onClick={handleNotifications}
+                style={{padding:'6px 14px',borderRadius:8,border:'none',cursor:'pointer',fontFamily:'Space Grotesk',fontSize:12,fontWeight:600,flexShrink:0,
+                  background:notifGranted?'rgba(52,211,153,0.2)':'var(--accent2)',
+                  color:notifGranted?'#34d399':'#fff'}}>
+                {notifGranted?'✓ On':'Enable'}
+              </button>
+            </div>
+
+            {/* Auth buttons */}
+            <div style={{display:'flex',gap:8,marginBottom:8}}>
+              <button onClick={()=>{setMode('register');setError('');}}
+                style={{flex:1,padding:'12px',borderRadius:10,border:'none',cursor:'pointer',background:'var(--accent2)',color:'#fff',fontSize:13,fontFamily:'Space Grotesk',fontWeight:600}}>
+                Create Account
+              </button>
+              <button onClick={()=>{setMode('login');setError('');}}
+                style={{flex:1,padding:'12px',borderRadius:10,border:'1px solid var(--border)',cursor:'pointer',background:'var(--surface2)',color:'var(--text)',fontSize:13,fontFamily:'Space Grotesk',fontWeight:500}}>
+                Log In
+              </button>
+            </div>
+
+            <button onClick={continueAsGuest}
+              style={{width:'100%',padding:'10px',borderRadius:10,border:'none',cursor:'pointer',background:'transparent',color:'var(--muted)',fontSize:12,fontFamily:'Space Grotesk'}}>
+              Continue as Guest →
+            </button>
+          </div>
+        )}
+
+        {/* REGISTER MODE */}
+        {mode==='register'&&(
+          <div>
+            <button onClick={()=>{setMode('welcome');setError('');}} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:13,marginBottom:16,fontFamily:'Space Grotesk',padding:0}}>← Back</button>
+            <div style={{fontSize:20,fontWeight:700,marginBottom:18,color:'#fff'}}>Create Account</div>
+            <input value={name} onChange={e=>setName(e.target.value)} placeholder="Your name" style={inputStyle}/>
+            <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email address" type="email" style={inputStyle}/>
+            <input value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password (min 6 chars)" type="password" style={inputStyle}/>
+            <div style={{marginBottom:14}}>
+              <div style={{fontSize:11,color:'var(--muted)',marginBottom:8,letterSpacing:1}}>I AM A...</div>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:6}}>
+                {roles.map(r=>(
+                  <button key={r} onClick={()=>setRole(r)}
+                    style={{padding:'8px',borderRadius:8,cursor:'pointer',fontFamily:'Space Grotesk',fontSize:12,fontWeight:500,
+                      background:role===r?'rgba(167,139,250,0.2)':'var(--surface2)',
+                      border:`1px solid ${role===r?'var(--accent)':'var(--border)'}`,
+                      color:role===r?'var(--accent)':'var(--muted)'}}>
+                    {r}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <button onClick={handleRegister} disabled={loading} style={btnPrimary}>
+              {loading?'Creating...':'Create Account'}
+            </button>
+            <div style={{textAlign:'center',fontSize:12,color:'var(--muted)'}}>
+              Already have an account? <span onClick={()=>{setMode('login');setError('');}} style={{color:'var(--accent)',cursor:'pointer'}}>Log in</span>
+            </div>
+            {error&&<div style={{marginTop:10,padding:'8px 12px',background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.3)',borderRadius:8,color:'#ef4444',fontSize:12}}>{error}</div>}
+          </div>
+        )}
+
+        {/* LOGIN MODE */}
+        {mode==='login'&&(
+          <div>
+            <button onClick={()=>{setMode('welcome');setError('');}} style={{background:'none',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:13,marginBottom:16,fontFamily:'Space Grotesk',padding:0}}>← Back</button>
+            <div style={{fontSize:20,fontWeight:700,marginBottom:18,color:'#fff'}}>Welcome Back</div>
+            <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email address" type="email" style={inputStyle}/>
+            <input value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password" type="password" style={inputStyle}/>
+            <button onClick={handleLogin} disabled={loading} style={btnPrimary}>
+              {loading?'Logging in...':'Log In'}
+            </button>
+            <div style={{textAlign:'center',fontSize:12,color:'var(--muted)'}}>
+              No account? <span onClick={()=>{setMode('register');setError('');}} style={{color:'var(--accent)',cursor:'pointer'}}>Create one</span>
+            </div>
+            {error&&<div style={{marginTop:10,padding:'8px 12px',background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.3)',borderRadius:8,color:'#ef4444',fontSize:12}}>{error}</div>}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
 // ─── ONBOARDING ───────────────────────────────────────────────────────────────
@@ -228,7 +501,7 @@ function AISearchBar({onSelect,placeholder='Search AI...',big=false}){
               style={{padding:'9px 13px',cursor:'pointer',display:'flex',alignItems:'center',gap:11,transition:'background 0.12s',borderBottom:'1px solid rgba(255,255,255,0.04)'}}
               onMouseEnter={e=>e.currentTarget.style.background='var(--surface2)'}
               onMouseLeave={e=>e.currentTarget.style.background='transparent'}>
-              <AILogo domain={ai.domain} name={ai.name} color={ai.color} size={30}/>
+              <AILogo domain={ai.domain} name={ai.name} color={ai.color} size={46}/>
               <div style={{flex:1,minWidth:0}}>
                 <div style={{fontWeight:600,fontSize:13,color:'#fff'}}>{ai.name}</div>
                 <div style={{fontSize:10,color:'var(--muted)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{ai.category} · {ai.desc}</div>
@@ -257,19 +530,26 @@ function Sidebar({screen,onScreen,onCategory,currentCatId,onAI,profile}){
           <div style={{width:27,height:27,borderRadius:7,background:'var(--accent2)',display:'flex',alignItems:'center',justifyContent:'center',boxShadow:'0 0 12px var(--accent-glow)',fontSize:13,flexShrink:0}}>⬡</div>
           <span style={{fontFamily:'Space Mono',fontWeight:700,fontSize:11,letterSpacing:2,color:'#fff'}}>NEURAL HUB</span>
         </div>
-        {profile&&<div style={{fontSize:11,color:'var(--muted)',marginBottom:11}}>Hey, <span style={{color:'var(--accent)',fontWeight:600}}>{profile.name}</span> · {profile.role}</div>}
+        {profile&&<div style={{fontSize:13,color:'var(--muted)',marginBottom:11,display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <span>Hey, <span style={{color:'var(--accent)',fontWeight:600}}>{profile.name}</span> · {profile.role}</span>
+          <button onClick={()=>{signOut();window.location.reload();}}
+            title="Log out"
+            style={{background:'rgba(239,68,68,0.12)',border:'1px solid rgba(239,68,68,0.25)',borderRadius:6,padding:'2px 8px',cursor:'pointer',color:'#ef4444',fontSize:9,fontFamily:"Space Mono",letterSpacing:0.5,flexShrink:0}}>
+            OUT
+          </button>
+        </div>}
         <AISearchBar onSelect={onAI} placeholder="Search any AI..." big={false}/>
       </div>
 
       {/* Main nav */}
       <div style={{padding:'7px 7px 0',flexShrink:0}}>
-        {[{id:'home',label:'Hub',icon:'⬡'},{id:'news',label:'AI News',icon:'◈'},{id:'history',label:'History',icon:'◎'}].map(item=>(
+        {[{id:'home',label:'Hub',icon:'⬡'},{id:'personal',label:'Personal AI',icon:'◑'},{id:'news',label:'AI News',icon:'◈'},{id:'history',label:'History',icon:'◎'}].map(item=>(
           <div key={item.id} onClick={()=>onScreen(item.id)}
             style={{display:'flex',alignItems:'center',gap:9,padding:'8px 9px',borderRadius:7,cursor:'pointer',marginBottom:1,
               background:screen===item.id?'rgba(167,139,250,0.14)':'transparent',
               color:screen===item.id?'var(--accent)':'var(--muted)',transition:'all 0.15s'}}>
             <span style={{fontSize:12}}>{item.icon}</span>
-            <span style={{fontSize:13,fontWeight:screen===item.id?600:400}}>{item.label}</span>
+            <span style={{fontSize:15,fontWeight:screen===item.id?600:400}}>{item.label}</span>
             {item.id==='history'&&history.length>0&&<span style={{marginLeft:'auto',fontSize:9,background:'var(--surface2)',borderRadius:20,padding:'1px 6px',color:'var(--muted)'}}>{history.length}</span>}
           </div>
         ))}
@@ -278,7 +558,7 @@ function Sidebar({screen,onScreen,onCategory,currentCatId,onAI,profile}){
       {/* Favorites */}
       {favs.length>0&&(
         <div style={{padding:'8px 7px 0',borderTop:'1px solid var(--border)',flexShrink:0}}>
-          <div style={{fontSize:9,color:'var(--muted)',letterSpacing:2,fontFamily:'Space Mono',padding:'0 9px',marginBottom:5}}>FAVORITES</div>
+          <div style={{fontSize:11,color:'var(--muted)',letterSpacing:2,fontFamily:'Space Mono',padding:'0 9px',marginBottom:5}}>FAVORITES</div>
           {favs.slice(0,4).map(fid=>{
             const ai=ALL_AIS.find(a=>a.id===fid);if(!ai)return null;
             return(
@@ -296,7 +576,7 @@ function Sidebar({screen,onScreen,onCategory,currentCatId,onAI,profile}){
 
       {/* Categories */}
       <div style={{padding:'7px 7px 3px',borderTop:'1px solid var(--border)',flexShrink:0}}>
-        <div style={{fontSize:9,color:'var(--muted)',letterSpacing:2,fontFamily:'Space Mono',padding:'0 9px',marginBottom:5}}>CATEGORIES</div>
+        <div style={{fontSize:11,color:'var(--muted)',letterSpacing:2,fontFamily:'Space Mono',padding:'0 9px',marginBottom:5}}>CATEGORIES</div>
         <input value={catSearch} onChange={e=>setCatSearch(e.target.value)} placeholder="Filter..."
           style={{width:'100%',background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:7,padding:'6px 10px',color:'#fff',fontSize:11,fontFamily:'Space Grotesk',outline:'none',marginBottom:3}}
           onFocus={e=>e.target.style.borderColor='var(--accent)'} onBlur={e=>e.target.style.borderColor='var(--border)'}/>
@@ -307,9 +587,9 @@ function Sidebar({screen,onScreen,onCategory,currentCatId,onAI,profile}){
             style={{display:'flex',alignItems:'center',gap:7,padding:'7px 9px',borderRadius:7,cursor:'pointer',marginBottom:1,
               background:currentCatId===cat.id?`${cat.color}18`:'transparent',
               color:currentCatId===cat.id?cat.color:'var(--muted)',transition:'all 0.12s'}}>
-            <span style={{fontSize:11}}>{cat.icon}</span>
-            <span style={{fontSize:12,fontWeight:currentCatId===cat.id?600:400,flex:1}}>{cat.label}</span>
-            <span style={{fontSize:9,color:'var(--stone)'}}>{cat.ais.length}</span>
+            <span style={{fontSize:14}}>{cat.icon}</span>
+            <span style={{fontSize:14,fontWeight:currentCatId===cat.id?600:400,flex:1}}>{cat.label}</span>
+            <span style={{fontSize:12,color:'var(--stone)'}}>{cat.ais.length}</span>
           </div>
         ))}
       </div>
@@ -330,13 +610,13 @@ function HomeScreen({onCategory,onAI,profile}){
   },[profile]);
 
   return(
-    <div style={{flex:1,overflowY:'auto',padding:'28px 28px 40px'}}>
+    <div style={{flex:1,overflowY:'auto',padding:'40px 40px 60px'}}>
       {/* Hero */}
       <div style={{marginBottom:32}} className="fade-up">
-        {profile&&<div style={{fontSize:12,color:'var(--muted)',marginBottom:6}}>Welcome back, <span style={{color:'#fff',fontWeight:600}}>{profile.name}</span></div>}
-        <h1 style={{fontSize:36,fontWeight:700,lineHeight:1.1,marginBottom:14,textShadow:'0 0 40px rgba(167,139,250,0.18)'}}>
+        {profile&&<div style={{fontSize:14,color:'var(--muted)',marginBottom:6}}>Welcome back, <span style={{color:'#fff',fontWeight:600}}>{profile.name}</span></div>}
+        <h1 style={{fontSize:52,fontWeight:700,lineHeight:1.1,marginBottom:14,textShadow:'0 0 40px rgba(167,139,250,0.18)'}}>
           {profile?`${profile.role} AI Tools`:'Your AI Universe'}<br/>
-          <span style={{color:'var(--accent)',fontSize:28}}>All in one place</span>
+          <span style={{color:'var(--accent)',fontSize:40}}>All in one place</span>
         </h1>
         <div style={{maxWidth:520}}>
           <AISearchBar onSelect={onAI} placeholder="Search any AI tool by name, use or category..." big={true}/>
@@ -346,7 +626,7 @@ function HomeScreen({onCategory,onAI,profile}){
       {/* Recently visited */}
       {history.length>0&&(
         <div style={{marginBottom:30}} className="fade-up">
-          <div style={{fontSize:9,color:'var(--muted)',letterSpacing:2,fontFamily:'Space Mono',marginBottom:12}}>RECENTLY VISITED</div>
+          <div style={{fontSize:11,color:'var(--muted)',letterSpacing:2,fontFamily:'Space Mono',marginBottom:12}}>RECENTLY VISITED</div>
           <div style={{display:'flex',gap:9,flexWrap:'wrap'}}>
             {history.slice(0,6).map(h=>{
               const ai=ALL_AIS.find(a=>a.id===h.id);if(!ai)return null;
@@ -355,7 +635,7 @@ function HomeScreen({onCategory,onAI,profile}){
                   style={{display:'flex',alignItems:'center',gap:9,background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:10,padding:'9px 13px',cursor:'pointer',transition:'all 0.15s'}}
                   onMouseEnter={e=>{e.currentTarget.style.borderColor=`${ai.color}44`;e.currentTarget.style.background='var(--surface3)';}}
                   onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--surface2)';}}>
-                  <AILogo domain={ai.domain} name={ai.name} color={ai.color} size={26}/>
+                  <AILogo domain={ai.domain} name={ai.name} color={ai.color} size={38}/>
                   <span style={{fontSize:13,fontWeight:600,color:'#fff'}}>{ai.name}</span>
                 </div>
               );
@@ -368,7 +648,7 @@ function HomeScreen({onCategory,onAI,profile}){
       <div style={{marginBottom:30}} className="fade-up">
         <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
           <div style={{width:6,height:6,borderRadius:'50%',background:'#fb923c'}} className="pulse"/>
-          <div style={{fontSize:9,color:'var(--muted)',letterSpacing:2,fontFamily:'Space Mono'}}>TRENDING RIGHT NOW</div>
+          <div style={{fontSize:11,color:'var(--muted)',letterSpacing:2,fontFamily:'Space Mono'}}>TRENDING RIGHT NOW</div>
         </div>
         <div style={{display:'flex',gap:9,flexWrap:'wrap'}}>
           {trending.map(ai=>(
@@ -376,9 +656,9 @@ function HomeScreen({onCategory,onAI,profile}){
               style={{display:'flex',alignItems:'center',gap:9,background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:10,padding:'9px 13px',cursor:'pointer',transition:'all 0.15s',position:'relative'}}
               onMouseEnter={e=>{e.currentTarget.style.borderColor=`${ai.color}44`;e.currentTarget.style.background='var(--surface3)';}}
               onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--surface2)';}}>
-              <AILogo domain={ai.domain} name={ai.name} color={ai.color} size={26}/>
+              <AILogo domain={ai.domain} name={ai.name} color={ai.color} size={38}/>
               <div>
-                <div style={{fontSize:12,fontWeight:600,color:'#fff'}}>{ai.name}</div>
+                <div style={{fontSize:15,fontWeight:600,color:'#fff'}}>{ai.name}</div>
                 <div style={{fontSize:9,color:'var(--muted)'}}>{ai.category}</div>
               </div>
               {ai.isNew&&<span style={{position:'absolute',top:-4,right:-4,fontSize:7,padding:'1px 5px',borderRadius:20,fontWeight:700,background:'rgba(52,211,153,0.9)',color:'#000',letterSpacing:0.5}}>NEW</span>}
@@ -390,7 +670,7 @@ function HomeScreen({onCategory,onAI,profile}){
       {/* Recommended (if profile) */}
       {recommended&&(
         <div style={{marginBottom:30}} className="fade-up">
-          <div style={{fontSize:9,color:'var(--muted)',letterSpacing:2,fontFamily:'Space Mono',marginBottom:12}}>RECOMMENDED FOR {profile.role.toUpperCase()}S</div>
+          <div style={{fontSize:11,color:'var(--muted)',letterSpacing:2,fontFamily:'Space Mono',marginBottom:12}}>RECOMMENDED FOR {profile.role.toUpperCase()}S</div>
           <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(220px,1fr))',gap:10}}>
             {recommended.map(cat=>(
               <div key={cat.id} onClick={()=>onCategory(cat)}
@@ -399,8 +679,8 @@ function HomeScreen({onCategory,onAI,profile}){
                 onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.background='var(--surface2)';}}>
                 <span style={{fontSize:20,color:cat.color}}>{cat.icon}</span>
                 <div>
-                  <div style={{fontWeight:600,fontSize:14,color:'#fff'}}>{cat.label}</div>
-                  <div style={{fontSize:11,color:'var(--muted)'}}>{cat.ais.length} tools</div>
+                  <div style={{fontWeight:700,fontSize:16,color:'#fff'}}>{cat.label}</div>
+                  <div style={{fontSize:12,color:'var(--muted)'}}>{cat.ais.length} tools</div>
                 </div>
                 <span style={{marginLeft:'auto',color:'var(--muted)',fontSize:14}}>→</span>
               </div>
@@ -410,33 +690,40 @@ function HomeScreen({onCategory,onAI,profile}){
       )}
 
       {/* All Categories */}
-      <div style={{fontSize:9,color:'var(--muted)',letterSpacing:2,fontFamily:'Space Mono',marginBottom:12}}>ALL CATEGORIES</div>
+      <div style={{fontSize:11,color:'var(--muted)',letterSpacing:2,fontFamily:'Space Mono',marginBottom:12}}>ALL CATEGORIES</div>
       <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(270px,1fr))',gap:12}}>
         {CATEGORIES.map((cat,i)=>(
           <div key={cat.id} onClick={()=>onCategory(cat)}
             onMouseEnter={()=>setHover(cat.id)} onMouseLeave={()=>setHover(null)}
             className="fade-up"
-            style={{animationDelay:`${i*0.025}s`,background:hover===cat.id?'var(--surface3)':'var(--surface2)',border:'1px solid',borderColor:hover===cat.id?`${cat.color}50`:'var(--border)',borderRadius:13,cursor:'pointer',transition:'all 0.2s',position:'relative',overflow:'hidden',aspectRatio:'16/9',boxShadow:hover===cat.id?`0 6px 28px ${cat.color}18`:'none',display:'flex',flexDirection:'column'}}>
+            style={{animationDelay:`${i*0.025}s`,background:hover===cat.id?'var(--surface3)':'var(--surface2)',border:'1px solid',borderColor:hover===cat.id?`${cat.color}50`:'var(--border)',borderRadius:13,cursor:'pointer',transition:'all 0.2s',position:'relative',overflow:'hidden',minHeight:'200px',boxShadow:hover===cat.id?`0 6px 28px ${cat.color}18`:'none',display:'flex',flexDirection:'column'}}>
             <div style={{position:'absolute',bottom:-15,right:-15,width:100,height:100,borderRadius:'50%',background:`${cat.color}16`,filter:'blur(30px)',opacity:hover===cat.id?1:0.3,transition:'opacity 0.3s',pointerEvents:'none'}}/>
             <div style={{flex:1,display:'flex',alignItems:'center',padding:'14px 14px 5px',gap:7,flexWrap:'wrap'}}>
-              {cat.ais.slice(0,5).map(ai=>(
+              {cat.ais.slice(0,4).map(ai=>(
                 <div key={ai.id} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:3}}>
-                  <div style={{width:34,height:34,borderRadius:8,overflow:'hidden',background:'rgba(255,255,255,0.05)',border:`1px solid ${cat.color}22`,display:'flex',alignItems:'center',justifyContent:'center',position:'relative'}}>
-                    <AILogo domain={ai.domain} name={ai.name} color={cat.color} size={30}/>
+                  <div style={{width:52,height:52,borderRadius:12,overflow:'hidden',background:'rgba(255,255,255,0.05)',border:`1px solid ${cat.color}22`,display:'flex',alignItems:'center',justifyContent:'center',position:'relative'}}>
+                    <AILogo domain={ai.domain} name={ai.name} color={cat.color} size={46}/>
                     {ai.isNew&&<div style={{position:'absolute',top:-2,right:-2,width:7,height:7,borderRadius:'50%',background:'#34d399',border:'1px solid #0b0b10'}}/>}
                   </div>
-                  <span style={{fontSize:7,color:'rgba(255,255,255,0.38)',fontWeight:600,maxWidth:34,textAlign:'center',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{ai.name.split(' ')[0]}</span>
+                  <span style={{fontSize:10,color:'rgba(255,255,255,0.38)',fontWeight:600,maxWidth:52,textAlign:'center',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{ai.name.split(' ')[0]}</span>
                 </div>
               ))}
-              {cat.ais.length>5&&<div style={{width:34,height:34,borderRadius:8,background:`${cat.color}14`,border:`1px solid ${cat.color}25`,display:'flex',alignItems:'center',justifyContent:'center',fontSize:9,color:cat.color,fontWeight:700}}>+{cat.ais.length-5}</div>}
+              {cat.ais.length>4&&(
+                <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:3}}>
+                  <div style={{width:52,height:52,borderRadius:12,background:`${cat.color}22`,border:`1px solid ${cat.color}44`,display:'flex',alignItems:'center',justifyContent:'center'}}>
+                    <span style={{fontSize:14,fontWeight:700,color:cat.color}}>+{cat.ais.length-4}</span>
+                  </div>
+                  <span style={{fontSize:10,color:'rgba(255,255,255,0.38)',fontWeight:600}}>more</span>
+                </div>
+              )}
             </div>
-            <div style={{padding:'0 14px 13px',display:'flex',alignItems:'flex-end',justifyContent:'space-between'}}>
+            <div style={{padding:'10px 14px 16px',display:'flex',alignItems:'flex-end',justifyContent:'space-between'}}>
               <div>
                 <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:2}}>
-                  <span style={{fontSize:11,color:cat.color}}>{cat.icon}</span>
-                  <span style={{fontWeight:700,fontSize:15,color:'#fff'}}>{cat.label}</span>
+                  <span style={{fontSize:16,color:cat.color}}>{cat.icon}</span>
+                  <span style={{fontWeight:800,fontSize:17,color:'#fff'}}>{cat.label}</span>
                 </div>
-                <div style={{color:'var(--muted)',fontSize:9}}>{cat.ais.length} tools</div>
+                <div style={{color:'var(--muted)',fontSize:12}}>{cat.ais.length} tools</div>
               </div>
               <div style={{fontSize:14,color:hover===cat.id?cat.color:'rgba(255,255,255,0.1)',transition:'color 0.2s'}}>→</div>
             </div>
@@ -526,7 +813,7 @@ function AIDetailScreen({ai,category,onLaunch,onAI}){
         </div>
         <div style={{flex:1,minWidth:200}}>
           <div style={{fontSize:9,color:category.color,letterSpacing:2,marginBottom:4,fontFamily:'Space Mono'}}>{category.label.toUpperCase()} · {ai.type}</div>
-          <h1 style={{fontSize:28,fontWeight:700,color:'#fff',marginBottom:4}}>{ai.name}</h1>
+          <h1 style={{fontSize:40,fontWeight:700,color:'#fff',marginBottom:4}}>{ai.name}</h1>
           <p style={{color:'var(--muted)',fontSize:13,marginBottom:3}}>{ai.desc}</p>
           <p style={{color:'rgba(255,255,255,0.25)',fontSize:11,marginBottom:14}}>by {ai.company} · since {ai.founded}</p>
           <div style={{display:'flex',gap:8,flexWrap:'wrap',alignItems:'center'}}>
@@ -579,9 +866,9 @@ function AIDetailScreen({ai,category,onLaunch,onAI}){
                 style={{display:'flex',alignItems:'center',gap:8,background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:9,padding:'8px 12px',cursor:'pointer',transition:'all 0.15s'}}
                 onMouseEnter={e=>e.currentTarget.style.borderColor=`${s.color}50`}
                 onMouseLeave={e=>e.currentTarget.style.borderColor='var(--border)'}>
-                <AILogo domain={s.domain} name={s.name} color={s.color} size={26}/>
+                <AILogo domain={s.domain} name={s.name} color={s.color} size={38}/>
                 <div>
-                  <div style={{fontSize:12,fontWeight:600,color:'#fff'}}>{s.name}</div>
+                  <div style={{fontSize:15,fontWeight:600,color:'#fff'}}>{s.name}</div>
                   <div style={{fontSize:9,color:'var(--muted)'}}>{s.category}</div>
                 </div>
               </div>
@@ -613,7 +900,7 @@ function WorkspaceScreen({ai,category,onBack}){
   };
   return(
     <div style={{flex:1,display:'flex',overflow:'hidden'}}>
-      <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+      <div style={{flex:1,width:0,display:'flex',flexDirection:'column',overflow:'hidden'}}>
         <div style={{padding:'8px 14px',borderBottom:'1px solid var(--border)',display:'flex',alignItems:'center',gap:9,background:'var(--surface)',flexShrink:0}}>
           <button onClick={onBack} style={{background:'transparent',border:'none',color:'var(--muted)',cursor:'pointer',fontSize:16}}>←</button>
           <AILogo domain={ai.domain} name={ai.name} color={category.color} size={22}/>
@@ -645,7 +932,7 @@ function WorkspaceScreen({ai,category,onBack}){
           ))}
         </div>
         {tab==='projects'&&(
-          <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+          <div style={{flex:1,width:0,display:'flex',flexDirection:'column',overflow:'hidden'}}>
             <div style={{padding:'10px 11px',borderBottom:'1px solid var(--border)'}}>
               <textarea value={noteInput} onChange={e=>setNoteInput(e.target.value)} onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();saveNote();}}} placeholder="Save a note... (Enter to save)" rows={3} style={{width:'100%',background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:7,padding:'8px',color:'#fff',fontSize:11,fontFamily:'Space Grotesk',resize:'none',outline:'none'}}/>
               <button onClick={saveNote} style={{marginTop:5,width:'100%',background:'var(--accent2)',border:'none',color:'#fff',padding:'7px',borderRadius:7,cursor:'pointer',fontSize:11,fontFamily:'Space Grotesk',fontWeight:500}}>Save Note</button>
@@ -683,7 +970,7 @@ function HistoryScreen({onAI}){
     <div style={{flex:1,overflowY:'auto',padding:'28px 28px'}}>
       <div style={{marginBottom:24}} className="fade-up">
         <div style={{fontSize:9,letterSpacing:4,color:'var(--accent)',marginBottom:7,fontFamily:'Space Mono'}}>YOUR ACTIVITY</div>
-        <h2 style={{fontSize:28,fontWeight:700,color:'#fff',marginBottom:5}}>History</h2>
+        <h2 style={{fontSize:40,fontWeight:700,color:'#fff',marginBottom:5}}>History</h2>
         <p style={{color:'var(--muted)',fontSize:13}}>AI tools you've recently explored</p>
       </div>
       {history.length===0?(
@@ -718,6 +1005,168 @@ function HistoryScreen({onAI}){
   );
 }
 
+
+// ─── PERSONAL AI ──────────────────────────────────────────────────────────────
+const ANTHROPIC_KEY = 'YOUR_API_KEY'; // Replace with your key
+
+function PersonalAIScreen({profile}){
+  const [messages,setMessages]=useState([
+    {role:'assistant',content:`Hi ${profile?.name||'there'}! 👋 I'm your Personal AI. Ask me anything — I can help you find information, answer questions, summarize topics, or just have a conversation.`}
+  ]);
+  const [input,setInput]=useState('');
+  const [loading,setLoading]=useState(false);
+  const bottomRef=useRef(null);
+  const inputRef=useRef(null);
+
+  useEffect(()=>{
+    bottomRef.current?.scrollIntoView({behavior:'smooth'});
+  },[messages]);
+
+  const send=async()=>{
+    const text=input.trim();
+    if(!text||loading)return;
+    setInput('');
+    const newMessages=[...messages,{role:'user',content:text}];
+    setMessages(newMessages);
+    setLoading(true);
+    try{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'x-api-key':ANTHROPIC_KEY,
+          'anthropic-version':'2023-06-01',
+          'anthropic-dangerous-allow-browser':'true',
+        },
+        body:JSON.stringify({
+          model:'claude-sonnet-4-20250514',
+          max_tokens:1024,
+          system:`You are a helpful Personal AI assistant integrated into Neural Hub, an AI tools directory. The user's name is ${profile?.name||'Explorer'} and their role is ${profile?.role||'Everyone'}. Be concise, helpful and friendly. You can help with any topic including web research, explanations, recommendations, and more.`,
+          messages:newMessages.map(m=>({role:m.role,content:m.content})),
+        }),
+      });
+      const data=await res.json();
+      const reply=data.content?.[0]?.text||'Sorry, I could not get a response.';
+      setMessages(prev=>[...prev,{role:'assistant',content:reply}]);
+    }catch(e){
+      setMessages(prev=>[...prev,{role:'assistant',content:'Sorry, there was an error. Please check your API key.'}]);
+    }
+    setLoading(false);
+    setTimeout(()=>inputRef.current?.focus(),100);
+  };
+
+  const clearChat=()=>{
+    setMessages([{role:'assistant',content:`Hi ${profile?.name||'there'}! 👋 I'm your Personal AI. Ask me anything!`}]);
+  };
+
+  const suggestions=[
+    'What are the best AI tools for designers?',
+    'Summarize the latest AI news',
+    'How does GPT-4 compare to Claude?',
+    'What AI tools help with video editing?',
+  ];
+
+  return(
+    <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden',height:'100vh'}}>
+      {/* Header */}
+      <div style={{padding:'20px 28px 16px',borderBottom:'1px solid var(--border)',background:'rgba(11,11,16,0.8)',backdropFilter:'blur(10px)',flexShrink:0}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <div>
+            <div style={{fontSize:10,letterSpacing:3,color:'var(--accent)',fontFamily:'Space Mono',marginBottom:4}}>PERSONAL AI</div>
+            <h2 style={{fontSize:22,fontWeight:700,color:'#fff'}}>Your AI Assistant</h2>
+          </div>
+          <button onClick={clearChat}
+            style={{background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:8,padding:'7px 14px',cursor:'pointer',color:'var(--muted)',fontFamily:'Space Grotesk',fontSize:12,transition:'all 0.2s'}}
+            onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--accent)';e.currentTarget.style.color='var(--accent)';}}
+            onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.color='var(--muted)';}}>
+            ↺ Clear
+          </button>
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div style={{flex:1,overflowY:'auto',padding:'20px 28px'}}>
+        {messages.map((m,i)=>(
+          <div key={i} style={{marginBottom:16,display:'flex',flexDirection:'column',alignItems:m.role==='user'?'flex-end':'flex-start'}}>
+            <div style={{
+              maxWidth:'75%',
+              padding:'12px 16px',
+              borderRadius:m.role==='user'?'16px 16px 4px 16px':'16px 16px 16px 4px',
+              background:m.role==='user'?'var(--accent2)':'var(--surface2)',
+              border:m.role==='user'?'none':'1px solid var(--border)',
+              color:'#fff',
+              fontSize:14,
+              lineHeight:1.6,
+              whiteSpace:'pre-wrap',
+              wordBreak:'break-word',
+            }}>
+              {m.content}
+            </div>
+            <div style={{fontSize:10,color:'var(--muted)',marginTop:4,padding:'0 4px'}}>
+              {m.role==='user'?(profile?.name||'You'):'Neural AI'}
+            </div>
+          </div>
+        ))}
+        {loading&&(
+          <div style={{display:'flex',alignItems:'flex-start',marginBottom:16}}>
+            <div style={{padding:'12px 16px',borderRadius:'16px 16px 16px 4px',background:'var(--surface2)',border:'1px solid var(--border)'}}>
+              <div style={{display:'flex',gap:4,alignItems:'center'}}>
+                {[0,1,2].map(i=>(
+                  <div key={i} style={{width:6,height:6,borderRadius:'50%',background:'var(--accent)',animation:'pulseDot 1.2s ease infinite',animationDelay:`${i*0.2}s`}}/>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+        {/* Suggestions when only 1 message */}
+        {messages.length===1&&(
+          <div style={{marginTop:24}}>
+            <div style={{fontSize:11,color:'var(--muted)',marginBottom:12,letterSpacing:1,fontFamily:'Space Mono'}}>SUGGESTED QUESTIONS</div>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:8}}>
+              {suggestions.map((s,i)=>(
+                <button key={i} onClick={()=>{setInput(s);setTimeout(()=>inputRef.current?.focus(),50);}}
+                  style={{padding:'12px 14px',borderRadius:10,border:'1px solid var(--border)',background:'var(--surface2)',color:'var(--muted)',fontSize:12,fontFamily:'Space Grotesk',cursor:'pointer',textAlign:'left',transition:'all 0.2s',lineHeight:1.4}}
+                  onMouseEnter={e=>{e.currentTarget.style.borderColor='var(--accent)';e.currentTarget.style.color='#fff';}}
+                  onMouseLeave={e=>{e.currentTarget.style.borderColor='var(--border)';e.currentTarget.style.color='var(--muted)';}}>
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        <div ref={bottomRef}/>
+      </div>
+
+      {/* Input */}
+      <div style={{padding:'16px 28px 24px',borderTop:'1px solid var(--border)',background:'rgba(11,11,16,0.8)',backdropFilter:'blur(10px)',flexShrink:0}}>
+        <div style={{display:'flex',gap:10,alignItems:'flex-end'}}>
+          <textarea
+            ref={inputRef}
+            value={input}
+            onChange={e=>setInput(e.target.value)}
+            onKeyDown={e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}}
+            placeholder="Ask me anything... (Enter to send, Shift+Enter for new line)"
+            rows={1}
+            style={{flex:1,background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:12,padding:'12px 16px',color:'#fff',fontSize:14,fontFamily:'Space Grotesk',outline:'none',resize:'none',maxHeight:120,overflowY:'auto',lineHeight:1.5,transition:'border-color 0.2s'}}
+            onFocus={e=>e.target.style.borderColor='var(--accent)'}
+            onBlur={e=>e.target.style.borderColor='var(--border)'}
+          />
+          <button onClick={send} disabled={loading||!input.trim()}
+            style={{padding:'12px 20px',borderRadius:12,border:'none',cursor:loading||!input.trim()?'default':'pointer',
+              background:loading||!input.trim()?'var(--surface2)':'var(--accent2)',
+              color:loading||!input.trim()?'var(--muted)':'#fff',
+              fontSize:14,fontWeight:600,fontFamily:'Space Grotesk',transition:'all 0.2s',flexShrink:0}}>
+            {loading?'...':'Send →'}
+          </button>
+        </div>
+        <div style={{fontSize:10,color:'var(--muted)',marginTop:8,textAlign:'center',fontFamily:'Space Mono'}}>
+          Powered by Claude · Neural Hub Personal AI
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── NEWS ─────────────────────────────────────────────────────────────────────
 const CAT_NEWS={Models:'#a78bfa',Tools:'#34d399',Research:'#60a5fa',Business:'#fbbf24',Policy:'#fb923c'};
 const FALLBACK=[
@@ -736,20 +1185,65 @@ const FALLBACK=[
 function NewsScreen(){
   const [articles,setArticles]=useState([]);
   const [loading,setLoading]=useState(true);
+  const [error,setError]=useState(null);
   const [tries,setTries]=useState(0);
+
+  const RSS_FEEDS=[
+    'https://feeds.feedburner.com/TechCrunch',
+    'https://www.theverge.com/rss/index.xml',
+    'https://venturebeat.com/category/ai/feed/',
+    'https://www.wired.com/feed/tag/artificial-intelligence/rss',
+    'https://feeds.arstechnica.com/arstechnica/index',
+  ];
+
+  const PROXY='https://api.rss2json.com/v1/api.json?rss_url=';
+  const AI_KEYWORDS=['AI','artificial intelligence','GPT','LLM','machine learning','OpenAI','Anthropic','Google AI','DeepMind','chatbot','neural','Gemini','Claude','ChatGPT','Llama','generative'];
+
+  const catFromTitle=(t)=>{
+    const tl=t.toLowerCase();
+    if(/gpt|llama|gemini|claude|model|release|launch/.test(tl))return'Models';
+    if(/fund|acqui|invest|valuat|billion|deal/.test(tl))return'Business';
+    if(/law|regulat|policy|ban|eu|govern|act/.test(tl))return'Policy';
+    if(/research|study|paper|breakthrough|discover/.test(tl))return'Research';
+    return'Tools';
+  };
+
+  const fetchFeed=async(url)=>{
+    const res=await fetch(PROXY+encodeURIComponent(url));
+    const data=await res.json();
+    if(!data.items)return[];
+    return data.items
+      .filter(item=>AI_KEYWORDS.some(k=>(item.title+' '+(item.description||'')).toLowerCase().includes(k.toLowerCase())))
+      .slice(0,4)
+      .map(item=>({
+        title:item.title,
+        summary:(item.description||'').replace(/<[^>]+>/g,'').slice(0,160)+'...',
+        category:catFromTitle(item.title),
+        source:data.feed?.title||new URL(url).hostname,
+        date:item.pubDate?new Date(item.pubDate).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Recent',
+        url:item.link||'#',
+      }));
+  };
+
   useEffect(()=>{
     let cancelled=false;
     setLoading(true);
+    setError(null);
     (async()=>{
       try{
-        const res=await window.claude.complete({messages:[{role:'user',content:'Return ONLY a JSON array (no markdown, no code blocks) of 10 AI news stories from April 2026. Each object: {title,summary,category,source,date,url}. category must be one of: Models,Tools,Research,Business,Policy. Start with [ end with ]'}]});
+        const results=await Promise.allSettled(RSS_FEEDS.map(f=>fetchFeed(f)));
         if(cancelled)return;
-        const s=res.trim(),a=s.indexOf('['),b=s.lastIndexOf(']');
-        if(a===-1||b===-1)throw 0;
-        const j=JSON.parse(s.slice(a,b+1));
-        if(!Array.isArray(j)||!j.length)throw 0;
-        setArticles(j);
-      }catch{if(!cancelled)setArticles(FALLBACK);}
+        const all=results
+          .filter(r=>r.status==='fulfilled')
+          .flatMap(r=>r.value)
+          .filter((a,i,arr)=>arr.findIndex(b=>b.title===a.title)===i)
+          .sort(()=>Math.random()-0.5)
+          .slice(0,12);
+        if(all.length>0){setArticles(all);}
+        else{setArticles(FALLBACK);}
+      }catch(e){
+        if(!cancelled){setArticles(FALLBACK);setError('Using cached news');}
+      }
       if(!cancelled)setLoading(false);
     })();
     return()=>{cancelled=true;};
@@ -760,7 +1254,7 @@ function NewsScreen(){
       <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:24,flexWrap:'wrap',gap:10}} className="fade-up">
         <div>
           <div style={{fontSize:9,letterSpacing:4,color:'var(--accent)',marginBottom:6,fontFamily:'Space Mono'}}>LIVE DIGEST</div>
-          <h2 style={{fontSize:28,fontWeight:700,color:'#fff',marginBottom:4}}>AI News</h2>
+          <h2 style={{fontSize:40,fontWeight:700,color:'#fff',marginBottom:4}}>AI News</h2>
           <p style={{color:'var(--muted)',fontSize:13}}>What's happening in AI right now</p>
         </div>
         <button onClick={()=>setTries(t=>t+1)}
@@ -827,18 +1321,19 @@ function App(){
   const goCategory=useCallback(cat=>{setSelCat(cat);setScreen('category');},[]);
 
   if(!profile){
-    return <Onboarding onDone={p=>{setProfileState(p);setProfile(p);}}/>;
+    return <AuthScreen onDone={p=>{setProfileState(p);setProfile(p);}}/>;
   }
 
   return(
-    <div style={{height:'100vh',display:'flex',overflow:'hidden'}}>
+    <div style={{height:'100vh',width:'100vw',display:'flex',overflow:'hidden'}}>
       <Sidebar screen={screen} onScreen={s=>setScreen(s)} onCategory={goCategory} currentCatId={selCat?.id} onAI={goAI} profile={profile}/>
-      <div style={{flex:1,display:'flex',flexDirection:'column',overflow:'hidden'}}>
+      <div style={{flex:1,width:0,display:'flex',flexDirection:'column',overflow:'hidden'}}>
         {screen==='home'&&<HomeScreen onCategory={goCategory} onAI={goAI} profile={profile}/>}
         {screen==='category'&&selCat&&<CategoryScreen category={selCat} onAI={(ai,cat)=>{addHistory({...ai,catId:cat.id});setSelAI(ai);setSelAICat(cat);setScreen('detail');}}/>}
         {screen==='detail'&&selAI&&<AIDetailScreen ai={selAI} category={selAICat} onLaunch={()=>setScreen('workspace')} onAI={goAI}/>}
         {screen==='workspace'&&selAI&&<WorkspaceScreen ai={selAI} category={selAICat} onBack={()=>setScreen('detail')}/>}
         {screen==='news'&&<NewsScreen/>}
+        {screen==='personal'&&<PersonalAIScreen profile={profile}/>}
         {screen==='history'&&<HistoryScreen onAI={goAI}/>}
       </div>
     </div>
