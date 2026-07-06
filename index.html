@@ -578,6 +578,10 @@ function Sidebar({screen,onScreen,onCategory,currentCatId,onAI,profile,theme,tog
             {item.id==='history'&&history.length>0&&<span style={{marginLeft:'auto',fontSize:9,background:'var(--surface2)',borderRadius:20,padding:'1px 6px',color:'var(--muted)'}}>{history.length}</span>}
           </div>
         ))}
+        <a href="/blog/" style={{display:'flex',alignItems:'center',gap:9,padding:'8px 9px',borderRadius:7,cursor:'pointer',marginBottom:1,background:'transparent',color:'var(--muted)',textDecoration:'none',transition:'all 0.15s'}}>
+          <span style={{fontSize:12}}>✎</span>
+          <span style={{fontSize:15,fontWeight:400}}>Blog</span>
+        </a>
       </div>
 
       {/* Favorites */}
