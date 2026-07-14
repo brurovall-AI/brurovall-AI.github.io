@@ -195,6 +195,21 @@ const CATEGORIES = [
 ];
 
 const ALL_AIS = CATEGORIES.flatMap(c=>c.ais.map(a=>({...a,category:c.label,color:c.color,catId:c.id,catIcon:c.icon})));
+
+// ---- MONETIZACION: enlaces de afiliado y patrocinios -----------------------
+// 1) AFF_LINKS: cuando te acepten en un programa de afiliados, pega aqui tu
+//    enlace de afiliado. Si esta vacio se usa el enlace normal.
+// 2) SPONSORED_IDS: ids de herramientas con plaza "Destacado" de pago,
+//    ej: ['gamma','murf'] -> aparecen en la fila "Destacados - Patrocinado".
+const AFF_LINKS={
+  canvaai:'',jasper:'',copyai:'',notion:'',elevenlabs:'',murf:'',descript:'',
+  speechify:'',heygen:'',synthesia:'',gamma:'',beautifulai:'',hubspot:'',
+  make:'',leonardo:'',mubert:'',otter:'',reclaim:''
+};
+const SPONSORED_IDS=[];
+const toolUrl=a=>AFF_LINKS[a.id]||a.url;
+const affRel=a=>AFF_LINKS[a.id]?'sponsored noopener':'noopener';
+
 const TIER_COLORS={Free:'#34d399',Freemium:'#60a5fa',Paid:'#fb923c'};
 const ROLE_CATEGORIES={Designer:['design','presentations','video'],Developer:['coding','productivity','study'],Student:['study','writing','assistants'],Creator:['video','music','voice'],Marketer:['writing','presentations','productivity'],Everyone:null};
 
@@ -586,6 +601,9 @@ function Sidebar({screen,onScreen,onCategory,currentCatId,onAI,profile,theme,tog
           <a href="/sobre.html" style={{fontSize:10.5,color:'var(--muted)',textDecoration:'none'}}>Sobre</a>
           <a href="/contacto.html" style={{fontSize:10.5,color:'var(--muted)',textDecoration:'none'}}>Contacto</a>
           <a href="/privacy-policy.html" style={{fontSize:10.5,color:'var(--muted)',textDecoration:'none'}}>Privacidad</a>
+          <a href="/anunciate.html" style={{fontSize:10.5,color:'var(--muted)',textDecoration:'none'}}>Anúnciate</a>
+          <span style={{fontSize:9,color:'var(--muted)',opacity:0.65,width:'100%'}}>Algunos enlaces son de afiliado</span>
+
         </div>
       </div>
 
@@ -637,6 +655,7 @@ function HomeScreen({onCategory,onAI,profile}){
   const history=getHistory();
   const favs=getFavs();
   const trending=useMemo(()=>ALL_AIS.filter(a=>a.trending).slice(0,6),[]);
+const sponsored=useMemo(()=>SPONSORED_IDS.map(id=>ALL_AIS.find(a=>a.id===id)).filter(Boolean),[]);
   const recommended=useMemo(()=>{
     if(!profile||!ROLE_CATEGORIES[profile.role])return null;
     const catIds=ROLE_CATEGORIES[profile.role];
@@ -679,7 +698,31 @@ function HomeScreen({onCategory,onAI,profile}){
         </div>
       )}
 
+      {/* Destacados patrocinados */}
+      {sponsored.length>0&&(
+      <div style={{marginBottom:28}} className="fade-up">
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
+          <div style={{width:6,height:6,borderRadius:'50%',background:'#facc15'}} className="pulse"/>
+          <div style={{fontSize:11,color:'var(--muted)',letterSpacing:2,fontFamily:'Space Mono'}}>DESTACADOS</div>
+          <div style={{fontSize:9,color:'var(--muted)',border:'1px solid var(--border)',borderRadius:4,padding:'1px 5px',letterSpacing:1}}>PATROCINADO</div>
+        </div>
+        <div style={{display:'flex',gap:20,overflowX:'auto',paddingBottom:6,scrollbarWidth:'thin'}}>
+          {sponsored.map(ai=>(
+            <div key={ai.id} onClick={()=>onAI(ai)} title={ai.name}
+              style={{display:'flex',flexDirection:'column',alignItems:'center',gap:8,cursor:'pointer',flexShrink:0,transition:'transform 0.18s',position:'relative'}}
+              onMouseEnter={e=>e.currentTarget.style.transform='translateY(-4px) scale(1.08)'}
+              onMouseLeave={e=>e.currentTarget.style.transform='translateY(0) scale(1)'}>
+              <AILogo domain={ai.domain} name={ai.name} color={ai.color} size={80}/>
+              <span style={{fontSize:11,color:'var(--muted)',fontWeight:600,maxWidth:80,textAlign:'center',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{ai.name.split(' ')[0]}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{height:1,background:'var(--border)',marginTop:16}}/>
+      </div>
+      )}
+
       {/* Trending */}
+
       <div style={{marginBottom:28}} className="fade-up">
         <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:14}}>
           <div style={{width:6,height:6,borderRadius:'50%',background:'#fb923c'}} className="pulse"/>
@@ -843,7 +886,7 @@ function AIDetailScreen({ai,category,onLaunch,onAI}){
           <p style={{color:'rgba(255,255,255,0.25)',fontSize:11,marginBottom:14}}>by {ai.company} · since {ai.founded}</p>
           <div style={{display:'flex',gap:8,flexWrap:'wrap',alignItems:'center'}}>
             <button onClick={onLaunch} style={{background:'var(--accent2)',border:'none',color:'var(--text)',padding:'9px 20px',borderRadius:9,cursor:'pointer',fontSize:13,fontFamily:'Space Grotesk',fontWeight:600,boxShadow:'0 0 16px var(--accent-glow)'}}>Launch Workspace →</button>
-            <a href={ai.url} target="_blank" rel="noopener" style={{display:'inline-flex',alignItems:'center',background:'transparent',border:'1px solid var(--border)',color:'var(--muted)',padding:'9px 14px',borderRadius:9,textDecoration:'none',fontSize:12}}>Open site ↗</a>
+            <a href={toolUrl(ai)} target="_blank" rel={affRel(ai)} style={{display:'inline-flex',alignItems:'center',background:'transparent',border:'1px solid var(--border)',color:'var(--muted)',padding:'9px 14px',borderRadius:9,textDecoration:'none',fontSize:12}}>Open site ↗</a>
             <button onClick={toggleFav} style={{background:'transparent',border:`1px solid ${isFav?'#fb923c':'var(--border)'}`,color:isFav?'#fb923c':'var(--muted)',padding:'9px 14px',borderRadius:9,cursor:'pointer',fontSize:13,transition:'all 0.2s',fontFamily:'Space Grotesk'}}>{isFav?'♥ Saved':'♡ Favorite'}</button>
           </div>
         </div>
@@ -931,7 +974,7 @@ function WorkspaceScreen({ai,category,onBack}){
           <AILogo domain={ai.domain} name={ai.name} color={category.color} size={22}/>
           <span style={{fontWeight:600,fontSize:13,color:'var(--text)'}}>{ai.name}</span>
           <div style={{flex:1}}/>
-          <a href={ai.url} target="_blank" rel="noopener" style={{fontSize:11,color:'var(--accent)',textDecoration:'none',border:'1px solid var(--border)',borderRadius:6,padding:'4px 10px',background:'var(--surface2)'}}>Open in tab ↗</a>
+          <a href={toolUrl(ai)} target="_blank" rel={affRel(ai)} style={{fontSize:11,color:'var(--accent)',textDecoration:'none',border:'1px solid var(--border)',borderRadius:6,padding:'4px 10px',background:'var(--surface2)'}}>Open in tab ↗</a>
         </div>
         <div style={{flex:1,position:'relative',background:'#000'}}>
           {iframeError?(
@@ -940,7 +983,7 @@ function WorkspaceScreen({ai,category,onBack}){
               <div style={{textAlign:'center'}}>
                 <div style={{fontWeight:600,fontSize:15,marginBottom:6,color:'var(--text)'}}>{ai.name} blocks embedding</div>
                 <div style={{color:'var(--muted)',fontSize:12,marginBottom:16,maxWidth:280}}>Open in a new tab to use it — your notes are saved here.</div>
-                <a href={ai.url} target="_blank" rel="noopener" style={{display:'inline-block',background:'var(--accent2)',color:'var(--text)',padding:'10px 20px',borderRadius:9,textDecoration:'none',fontWeight:600,fontSize:13}}>Open {ai.name} →</a>
+                <a href={toolUrl(ai)} target="_blank" rel={affRel(ai)} style={{display:'inline-block',background:'var(--accent2)',color:'var(--text)',padding:'10px 20px',borderRadius:9,textDecoration:'none',fontWeight:600,fontSize:13}}>Open {ai.name} →</a>
               </div>
             </div>
           ):(
